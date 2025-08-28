@@ -1,0 +1,382 @@
+/* Register Page Styles */
+.register-page {
+  display: flex;
+  max-height: 100vh;
+  background: transparent;
+}
+
+/* Left Side - Register Content */
+.register-left {
+  flex: 1;
+  width: 42rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: white;
+}
+
+.register-content {
+  width: 100%;
+  max-width: 500px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.register-welcome-message {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #1e293b;
+  text-align: center;
+  margin-top: -0.5rem;
+  margin-bottom: 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.register-input-with-icon{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* height: 2rem; */
+  width: 350px;
+  margin-top: 1rem;
+  margin-left: 1rem; 
+}
+
+.register-input-icon {
+  position: absolute;
+  left: 1rem;
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+  z-index: 10;
+}
+
+.check-icon {
+  color: #10b981;
+}
+
+.register-input-with-icon input {
+  padding: 0.875rem 0rem 0.875rem 4rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  width: 98%;
+  box-sizing: border-box;
+}
+
+.register-input-with-icon input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.register-password-toggle {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.register-password-toggle:hover {
+  color: #3b82f6;
+  background: none;
+  transform: none;
+}
+
+.eye-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+}
+
+.eye-icon:hover {
+  color: #3b82f6;
+  background: none;
+}
+
+/* Field-specific error styling */
+.field-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  font-weight: 500;
+}
+
+/* Input error state */
+.register-input-with-icon input.error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.register-btn {
+  background: linear-gradient(135deg, #1798A9 0%, #2D92BA 100%);
+  color: white;
+  border: none;
+  padding: 0.875rem 0rem 0.875rem 0rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  width: 88%;
+}
+
+.register-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #1798A9 0%, #2D92BA 100%);
+}
+
+.register-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Divider */
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 0.2px;
+  background: #e5e7eb;
+}
+
+.divider span {
+  background: white;
+  padding: 0 1.2rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Google Button */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: white;
+  color: #374151;
+  border: 2px solid #3e424a;
+  padding: 0.875rem 0rem 0.875rem 0rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 1rem;
+  width: 88%;
+}
+
+.google-btn:hover {
+  background: #f9fafb;
+  color: #1a1b1b;
+  border-color: #797d7d;
+}
+
+.google-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  background: #7da7eb;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.6rem;
+}
+
+.login-link {
+  color: #6b7280;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.login-link a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+  color: #1d4ed8;
+}
+
+/* Message styling */
+.message {
+  padding: 1rem;
+  border-radius: 12px;
+  margin-top: 0rem;
+  text-align: center;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.success-message {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Right Side - Images */
+.register-right {
+  flex: 2;
+  width: 49rem;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 50%, #81d4fa 100%);
+}
+
+
+.register-main-image {
+  position: relative;
+  z-index: 10;
+  width: 500px;
+  height: 500px;
+}
+
+.standing-image {
+  width: 300px;
+  height: 480px;
+  left: 2%;
+  top: 3rem;
+  border-radius: 16px;
+  position: absolute;
+  z-index: 10; 
+}
+
+.image-2 {
+  position: absolute;
+  width: 39rem;
+  left: -3rem;
+  top: -2rem;
+  
+}
+
+.image-3 {
+  position: absolute;
+  top: 8rem;
+  left: 33rem;
+  width: 120px;
+}
+
+.image-4 {
+  position: absolute;
+  top: 5rem;
+  left: -12rem;
+  width: 220px;
+  z-index: 5;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .register-page {
+    flex-direction: column;
+  }
+  
+  .register-left {
+    padding: 1rem;
+  }
+  
+  .register-content {
+    padding: 1.5rem;
+  }
+  
+  .welcome-message {
+    font-size: 2rem;
+  }
+  
+  .register-right {
+    padding: 1rem;
+    min-height: 300px;
+  }
+  
+  .main-image .standing-image {
+    width: 200px;
+  }
+  
+  .floating-image {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-content {
+    padding: 1rem;
+  }
+  
+  .welcome-message {
+    font-size: 1.8rem;
+  }
+  
+  .main-image .standing-image {
+    width: 150px;
+  }
+  
+  .floating-image {
+    width: 30px;
+    height: 30px;
+  }
+} 
