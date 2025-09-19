@@ -25,9 +25,7 @@ function App() {
   const [isAuth, setIsAuth] = useState(!!localStorage.getItem('token'));
 
   useEffect(() => {
-    const onStorage = () => setIsAuth(!!localStorage.getItem('token'));
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    setIsAuth(!!localStorage.getItem('token'));
   }, []);
 
   return (
@@ -63,6 +61,11 @@ function App() {
           <Route
             path="/register-ap"
             element={isAuth ? <RegisterAP /> : <Navigate to="/login" />}
+          />
+          
+          <Route 
+            path="/dashboard" 
+            element={isAuth ? <Dashboard setIsAuth={setIsAuth} /> : <Navigate to="/login" />} 
           />
           
           <Route

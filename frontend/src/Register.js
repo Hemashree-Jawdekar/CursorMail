@@ -4,8 +4,11 @@ import RegisterAP from './RegisterAP';
 import { useNavigate, Link } from 'react-router-dom';
 import { EnvelopeIcon, LockClosedIcon, UserIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import google from './images/google.png';
 import './Register.css';
+import image5 from "./images/smiley.jpeg";
+import image6 from "./images/medal.jpeg";
 import image1 from "./images/standing-9@2x.png";
 import image2 from "./images/standing-10.png";
 import image3 from "./images/Message circle.png";
@@ -152,7 +155,7 @@ export default function Register() {
           </div>
 
           <div className="register-input-with-icon">
-            <FontAwesomeIcon icon="fa-thin fa-circle-check" className='register-input-icon' />
+            <FontAwesomeIcon icon={ faCircleCheck} className='register-input-icon' />
             <input
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
@@ -164,7 +167,7 @@ export default function Register() {
             <button
               type="button"
               className="register-password-toggle"
-              onClick={() => setConfirmPassword(!showConfirmPassword)}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {!showConfirmPassword ? <EyeSlashIcon className="eye-icon" /> : <EyeIcon className="eye-icon" />}
             </button>
@@ -194,9 +197,12 @@ export default function Register() {
       <div className="register-right">
         <div className="register-main-image">
           <div className='image-4'><img src={image4} alt="Feature 3" /></div>
+          <div className='emoji-1'><img src={image5} alt="Feature 4" /></div>
           <div className="standing-image"><img src={image1} alt="Standing person" /></div>
           <div className='image-2'><img src={image2} alt="Feature 1" /></div>
           <div className='image-3'><img src={image3} alt="Feature 2" /></div>
+          <div className='emoji-2'><img src={image6} alt="Feature 4" /></div>
+
         </div>
     </div>
     </div>

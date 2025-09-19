@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Typed from "typed.js";
 import {
+  faCircle,
   faUser,
   faGear,
   faMoon,
@@ -8,30 +10,66 @@ import {
   faBan,
   faPaperPlane,
   faFileAlt,
+  faBars,
+  faTimes,
+  faSearch,
+  faBoxArchive,
+  faUpload,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons';
+import logo from './images/mail.png';
+import fileText from './images/File text.png';
+import vector from './images/Vector.png';
+import ellipse from './images/Ellipse 2.png';
+import userCheck from './images/User check.png';
+import t1 from './images/marketing.jfif';
+import t2 from './images/meetings.jfif';
+import t3 from './images/education.jfif';
+import t4 from './images/welcome.jfif';
+import t5 from './images/offers.jfif';
+import t6 from './images/recruitment.jfif';
+import t7 from './images/sales.jfif';
+import t8 from './images/job.jfif';
+import t9 from './images/work.jfif';
+import t10 from './images/office.jfif';
+import t11 from './images/party.jfif';
+import t12 from './images/colleges.jfif';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faCircleUser } from '@fortawesome/free-solid-svg-icons';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import Dashboard from './Dashboard';
-import EditProfile from './EditProfile';
-import './App.css';
+import { useNavigate } from 'react-router-dom';
+import './Home.css';
+
+const ICONS = [
+  { icon: faPenToSquare, label: 'Compose', onClick: 'handleCompose' },
+  { icon: faInbox, label: 'Inbox', onClick: 'handleInbox' },
+  { icon: faBoxArchive, label: 'Archive', onClick: 'handleArchive' },
+  { icon: faUpload, label: 'Upload', onClick: 'handleUploads' },
+  { icon: faTrash, label: 'Trash', onClick: 'handleTrash' },
+  { icon: faGear, label: 'Settings', onClick: 'handleSettings' },
+];
 
 const Home = ({ setIsAuth }) => {
   const [darkMode, setDarkMode] = useState(false);
-  const [showLogout, setShowLogout] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const el = useRef(null); // element to inject typing into
+  const typed = useRef(null); // store Typed instance
+
+  const navigate = useNavigate();
 
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        console.error('No token found');
+        setIsAuth(false);
+        navigate('/login');
         return;
       }
-
       const response = await fetch('http://localhost:5000/api/home', {
         method: 'GET',
         headers: {
@@ -39,7 +77,6 @@ const Home = ({ setIsAuth }) => {
           'Content-Type': 'application/json'
         }
       });
-
       if (response.ok) {
         const data = await response.json();
         setUsername(data.user.username);
@@ -48,30 +85,28 @@ const Home = ({ setIsAuth }) => {
         } else {
           setProfilePhoto(null);
         }
-      } else if (response.status === 401) {
-        localStorage.removeItem('token');
-        setIsAuth(false);
-        navigate('/');
-      } else {
-        console.error('Failed to fetch user data');
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          setIsAuth(false);
+          navigate('/login');
+        }
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      // handle error
     }
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showLogout && !event.target.closest('.profile-dropdown')) {
-        setShowLogout(false);
+      if (showProfileMenu && !event.target.closest('.profile-container')) {
+        setShowProfileMenu(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showLogout]);
+  }, [showProfileMenu]);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -82,7 +117,6 @@ const Home = ({ setIsAuth }) => {
         setIsLoading(false);
       }
     };
-
     loadUserData();
   }, []);
 
@@ -93,10 +127,25 @@ const Home = ({ setIsAuth }) => {
         fetchUserData();
       }
     };
-
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, [fetchUserData]);
+
+  useEffect(() => {
+    // Combined string: type first line, break, type second line
+    typed.current = new Typed(el.current, {
+      strings: [`<span class="line"><h2>Send Bulk</h2></span><span class="line"><h1>Emails with Ease</h1></span>`],
+      typeSpeed: 60,       // typing speed
+      backSpeed: 0,        // no backspace
+      showCursor: false,    // show cursor
+      cursorChar: "|",     // custom cursor
+      smartBackspace: false,
+    });
+
+    return () => {
+      typed.current.destroy();
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -108,70 +157,149 @@ const Home = ({ setIsAuth }) => {
     navigate('/edit-profile');
   };
 
-  const handleInbox = () => {};
-  const handleSpam = () => {};
-  const handleSent = () => {};
-  const handleDrafts = () => {};
+  const handleCompose = () => { navigate('/dashboard'); };
+  const handleInbox = () => { };
+  const handleUploads = () => { };
+  const handleArchive = () => { };
+  const handleTrash = () => { };
+  const handleSettings = () => { navigate('/settings'); };
 
-  const navigate = useNavigate();
+  // Map icon click handlers
+  const iconHandlers = {
+    handleCompose,
+    handleInbox,
+    handleArchive,
+    handleUploads,
+    handleTrash,
+    handleSettings,
+  };
+
+  // Example template data
+  const templates = [
+    { id: 1, title: 'Marketing', description: 'Send a welcome message to new users.', src: t1 },
+    { id: 2, title: 'Meetings', description: 'Template for password reset instructions.', src: t2 },
+    { id: 3, title: 'Education', description: 'Monthly newsletter template.', src: t3 },
+    { id: 4, title: 'Welcome', description: 'Special promotion email template.', src: t4 },
+    { id: 5, title: 'Offers', description: 'Event invitation template.', src: t5 },
+    { id: 6, title: 'Recruitment', description: 'Feedback request email template.', src: t6 },
+    { id: 7, title: 'Sales', description: 'Survey invitation template.', src: t7 },
+    { id: 8, title: 'Job', description: 'Thank you email template.', src: t8 },
+    { id: 9, title: 'Work', description: 'Holiday greeting email template.', src: t9 },
+    { id: 10, title: 'Office', description: 'Weekly update email template.', src: t10 },
+    { id: 11, title: 'Party', description: 'Follow-up email template.', src: t11 },
+    { id: 12, title: 'Colleges', description: 'Product launch announcement template.', src: t12 },
+  ];
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-100'} ${isSidebarVisible ? 'sidebar-open' : ''}`}>
       {/* Top Navigation Bar */}
-      <nav className="navbar" style={{ width: "100vw", left: 0, right: 0, position: "fixed", top: 0 }}>
-        <span className="navbar-title">CursorMail</span>
+      <nav className="navbar-home">
+        <img src={logo} alt="CursorMail Logo" className="navbar-logo-home" />
+        <h1 className="navbar-title">ElevateMail</h1>
+        <div className="search-bar">
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              placeholder="Search templates..."
+              className="search-input"
+            />
+            <span className="search-icon">
+              <FontAwesomeIcon icon={faSearch} />
+            </span>
+          </div>
+        </div>
+        <button
+          className="menu-btn"
+          onClick={() => setIsSidebarVisible((prev) => !prev)}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+
+        <div className="navbar-buttons">
+          <button className="home-btn active" onClick={() => navigate('/home')}>Home</button>
+          <button className="templates-btn" onClick={() => navigate('/templates')}>Templates</button>
+          <button className="about-btn" onClick={() => navigate('/about')}>About</button>
+          <button className="contact-btn" onClick={() => navigate('/contact')}>ContactUs</button>
+          <div className="profile-container">
+            <button title="Profile" onClick={() => setShowProfileMenu((prev) => !prev)} className="profile-icon-btn">
+              {profilePhoto ? (
+                <img src={profilePhoto} alt="Profile" className="profile-avatar" />
+              ) : (
+                <FontAwesomeIcon icon={faCircleUser} size="lg" />
+              )}
+            </button>
+            {showProfileMenu && (
+              <div className="profile-dropdown">
+                <div className="profile-info">
+                  <span className="profile-name">{username || 'User'}</span>
+                </div>
+                <button className="dropdown-item" onClick={handleEditProfile}>
+                  <FontAwesomeIcon icon={faUser} />
+                  <span>Profile</span>
+                </button>
+                <button className="dropdown-item" onClick={() => setDarkMode((prev) => !prev)}>
+                  <FontAwesomeIcon icon={faMoon} />
+                  <span>Dark mode</span>
+                </button>
+                <button className="dropdown-item" onClick={handleLogout}>
+                  <FontAwesomeIcon icon={faSignOutAlt} />
+                  <span>Logout</span>
+                </button>
+                <button className="dropdown-item" onClick={() => navigate('/report')}>
+                  <FontAwesomeIcon icon={faBan} />
+                  <span>Report</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
       </nav>
 
       {/* Left Sliding Bar */}
-      <div
-        style={{
-          position: "fixed",
-          top: "4rem",
-          left: 0,
-          height: "calc(100vh - 4rem)",
-          width: "4.5rem",
-          background: darkMode ? "#222" : "#f5f5f5",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "space-between",
-          boxShadow: "2px 0 8px rgba(0,0,0,0.05)",
-          zIndex: 100,
-          padding: "1rem 0"
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem", marginTop: "1rem" }}>
-          <button title="Inbox" onClick={handleInbox} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            <FontAwesomeIcon icon={faInbox} size="lg" />
+      <div className={`left-bar${darkMode ? ' dark' : ''} ${isSidebarVisible ? 'open' : ''}`}>
+
+        {ICONS.map(({ icon, label, onClick }) => (
+          <button
+            key={label}
+            title={label}
+            onClick={iconHandlers[onClick]}
+            className="icon-btn"
+          >
+            <FontAwesomeIcon icon={icon} size="lg" />
+            <span className="icon-label">{label}</span>
           </button>
-          <button title="Spam" onClick={handleSpam} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            <FontAwesomeIcon icon={faBan} size="lg" />
-          </button>
-          <button title="Sent" onClick={handleSent} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            <FontAwesomeIcon icon={faPaperPlane} size="lg" />
-          </button>
-          <button title="Drafts" onClick={handleDrafts} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            <FontAwesomeIcon icon={faFileAlt} size="lg" />
-          </button>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem", marginBottom: "1rem" }}>
-          <button title="Profile" onClick={handleEditProfile} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            <FontAwesomeIcon icon={faCircleUser} size="lg" />
-          </button>
-          <button title="Logout" onClick={handleLogout} style={{ background: "none", border: "none", cursor: "pointer", color: "#e74c3c" }}>
-            <FontAwesomeIcon icon={faSignOutAlt} size="lg" />
-          </button>
+        ))}
+      </div>
+
+
+      {/* Banner above templates */}
+      <div className="bulk-banner">
+        <div className="bulk-banner-left"><span ref={el} className="typed-wrapper"></span></div>
+        <div className="bulk-banner-right">
+          <img src={ellipse} alt="Ellipse" className="ellipse" />
+          <img src={fileText} alt="File Text" className="file-text" />
+          <img src={vector} alt="Vector" className="vector" />
+          <img src={userCheck} alt="User Check" className="user-check" />
+          <FontAwesomeIcon icon={faCircle} beatFade style={{ color: "#a8d5f2", }} />
+          <FontAwesomeIcon icon={faCircle} beatFade style={{ color: "#a8d5f2", }} />
+          <FontAwesomeIcon icon={faCircle} beatFade style={{ color: "#a8d5f2", }} />
+          <FontAwesomeIcon icon={faCircle} beatFade style={{ color: "#a8d5f2", }} />
+          <FontAwesomeIcon icon={faCircle} beatFade style={{ color: "#a8d5f2", }} />
+          <FontAwesomeIcon icon={faCircle} beatFade style={{ color: "#a8d5f2", }} />
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="search-bar" style={{ marginTop: "5rem", marginLeft: "5.5rem" }}>
-        <input
-          type="text"
-          placeholder="Search..."
-          className="search-input"
-        />
-        <button className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md">Search</button>
+      {/* Template Boxes */}
+      <div className="templates-container">
+        {templates.map((template) => (
+          <div className="template-group" key={template.id}>
+            <div className="template-box">
+              <img src={template.src} alt={template.title} className="template-image" />
+            </div>
+            <div className="template-title">{template.title}</div>
+          </div>
+        ))}
       </div>
     </div>
   );

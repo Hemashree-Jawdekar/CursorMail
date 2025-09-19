@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import './RegisterAP.css';
+import logo from './images/mail.png';
 
 export default function RegisterAP() {
   const navigate = useNavigate();
@@ -8,6 +10,28 @@ export default function RegisterAP() {
     email: "",
     password: "",
   });
+  const [senderEmail, setSenderEmail] = useState("");
+
+  useEffect(() => {
+    // Fetch previous email and app password from backend
+    const fetchEmail = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await fetch('http://localhost:5000/api/home', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSenderEmail(data.user?.email || "");
+        setFormData(f => ({ ...f, email: data.user?.email || "" }));
+        // Check if app password exists
+        if (data.user?.app_password) {
+          navigate('/home');
+        }
+      }
+    };
+    fetchEmail();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -17,8 +41,7 @@ export default function RegisterAP() {
   };
 
   const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
-
+  const goToLogin = () => navigate('/login');
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -35,7 +58,15 @@ export default function RegisterAP() {
         }),
       });
       if (res.ok) {
-        navigate('/home'); // Redirect to home after successful setup
+        // Optionally check response data for success
+        // const data = await res.json();
+        // if (data.success) {
+        //   navigate('/home');
+        // }
+        navigate('/home');
+      } else {
+        // Handle error (show message, etc.)
+        console.error("Registration failed");
       }
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -43,36 +74,43 @@ export default function RegisterAP() {
   };
 
   return (
-    <div className="register-form">
+    <div className="register-ap-container">
       {step === 1 && (
-        <form onSubmit={(e) => { e.preventDefault(); nextStep(); }}>
-          <h2>Step 1: Enter Email</h2>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit">Next</button>
-        </form>
+        <>
+          <div className="register-ap-left">
+            <img src={logo} alt="CursorMail Logo" className="register-ap-logo" />
+            <h2>CursorMail</h2>
+          </div>
+          <form className="register-ap-form" onSubmit={handleSubmit}>
+            <label>
+              Sender Email:
+              <input
+                type="email"
+                name="email"
+                value={senderEmail}
+                readOnly
+              />
+            </label>
+            <label>
+              App Password:
+              <input
+                type="password"
+                name="password"
+                placeholder="App Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <div className="register-ap-actions">
+              <button type="button" onClick={goToLogin}>Back</button>
+              <button type="submit">Register</button>
+            </div>
+          </form>
+        </>
       )}
-
       {step === 2 && (
-        <form onSubmit={handleSubmit}>
-          <h2>Step 2: Enter App Password</h2>
-          <input
-            type="password"
-            name="password"
-            placeholder="App Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <button type="button" onClick={prevStep}>Back</button>
-          <button type="submit">Register</button>
-        </form>
+        <div></div>
       )}
     </div>
   );

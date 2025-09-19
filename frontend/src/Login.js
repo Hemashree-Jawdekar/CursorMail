@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import './Login.css';
 import girl from './images/sitting-2.png';
 import image12 from './images/11.png';
@@ -36,13 +36,13 @@ export default function Login({ setIsAuth }) {
   const [msg, setMsg] = useState('');
   const navigate = useNavigate();
 
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/api/login', { username, password });
-      console.log('Login response:', response.data);
-      // After successful login and storing token:
       localStorage.setItem('token', response.data.token);
+      setIsAuth(true);
 
       // Fetch user data to check sender_email and app_password
       const userRes = await fetch('http://localhost:5000/api/home', {
@@ -52,12 +52,8 @@ export default function Login({ setIsAuth }) {
       });
       const userData = await userRes.json();
 
-      if (
-        !userData.user.sender_email ||
-        userData.user.sender_email.trim() === "" ||
-        !userData.user.app_password ||
-        userData.user.app_password.trim() === ""
-      ) {
+      // Check for sender_email and app_password
+      if (!userData.user?.app_password) {
         navigate('/register-ap');
       } else {
         navigate('/home');
@@ -76,11 +72,11 @@ export default function Login({ setIsAuth }) {
 
           <div className="login-form-group">
             <div className="login-input-with-icon">
-              <EnvelopeIcon className="login-input-icon" />
+              <UserIcon className="login-input-icon" />
               <input
-                id="email"
-                type="email"
-                placeholder="     Email"
+                id="user"
+                type="user"
+                placeholder="     Username"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 required
@@ -93,7 +89,7 @@ export default function Login({ setIsAuth }) {
               <LockClosedIcon className="login-input-icon" />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="     Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -104,7 +100,7 @@ export default function Login({ setIsAuth }) {
                 className="login-password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeSlashIcon className="eye-icon" /> : <EyeIcon className="eye-icon" />}
+                {!showPassword ? <EyeSlashIcon className="eye-icon" /> : <EyeIcon className="eye-icon" />}
               </button>
 
             </div>

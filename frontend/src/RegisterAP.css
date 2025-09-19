@@ -1,0 +1,102 @@
+body{
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.register-ap-container {
+  display: flex;
+  min-height: 350px;
+  background: transparent;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  overflow: hidden;
+  margin: 2rem auto;
+  max-width: 900px; /* set a max width for the whole container */
+  width: 100%;
+}
+
+.register-ap-left {
+  flex: 1;
+  width: 60rem; /* increased width */
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* move content to the left */
+  padding: 2rem 3rem; /* more left padding */
+}
+
+.register-ap-left h2 {
+  margin-top: 1rem;
+  margin-left: 2rem; /* move name further left */
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: #2d3748;
+  letter-spacing: 1px;
+}
+
+.register-ap-icon {
+  width: 56px;
+  height: 56px;
+  color: #2563eb;
+}
+
+.register-ap-form {
+  flex: 2;
+  width: 100%;        /* take all available space */
+  max-width: 600px;   /* set a max width for the form */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 2rem;
+}
+
+.register-ap-form label {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.register-ap-form input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #f8fafc;
+  margin-top: 0.3rem;
+  transition: border 0.2s;
+}
+
+.register-ap-form input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+.register-ap-form .register-ap-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.register-ap-form button {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.register-ap-form button[type="button"] {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.register-ap-form button:hover {
+  background: #1d4ed8;
+}

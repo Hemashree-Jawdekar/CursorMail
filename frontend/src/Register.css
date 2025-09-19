@@ -320,13 +320,80 @@
   z-index: 5;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+
+.emoji-1{
+  position: absolute;
+  width: 45px;
+  top: 8.5rem;
+  left: -6.6rem;
+  z-index: 10;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Keyframes for emoji-1: bottom-right direction, ease-in scaling */
+@keyframes emoji1EaseIn {
+  0% {
+    transform: translate(60px, 60px) scale(0);
+    opacity: 0;
+    animation-timing-function: ease-in;
+    will-change: auto;
   }
-  50% {
-    transform: translateY(-10px);
+  80% {
+    transform: translate(-40px, 30px) scale(1);
+    opacity: 1;
+    animation-timing-function: ease-in;
+    will-change: auto;
   }
+  100% {
+    transform: translate(-40px, 30px) scale(1);
+    opacity: 1;
+    animation-timing-function: ease-in;
+    will-change: auto;
+  }
+}
+
+.emoji-2{
+  position: absolute;
+  width: 30px;
+  top: 10rem;
+  right: -6.5rem;
+  z-index: 10;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Keyframes for emoji-2: move from left to right with translation and scaling */
+@keyframes emoji2LeftToRight {
+  0% {
+    transform: translate(-60px, 40px) scale(0);
+    opacity: 0;
+    animation-timing-function: ease-in;
+    will-change: auto;
+  }
+  80% {
+    transform: translateX(40px) scale(1);
+    opacity: 1;
+    animation-timing-function: ease-in;
+    will-change: auto;
+  }
+  100% {
+    transform: translateX(40px) scale(1);
+    opacity: 1;
+    animation-timing-function: ease-in;
+    will-change: auto;
+  }
+}
+
+/* Apply the animations to emojis */
+.emoji-1, .image-4{
+  animation: emoji1EaseIn 3s ease-in infinite;
+  animation-delay: 0s;
+}
+
+.emoji-2, .image-3 {
+  animation: emoji2LeftToRight 3s ease-in infinite;
+  animation-delay: 1.5s;
 }
 
 /* Responsive Design */
@@ -379,4 +446,4 @@
     width: 30px;
     height: 30px;
   }
-} 
+}

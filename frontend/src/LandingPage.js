@@ -9,6 +9,7 @@ import {
   EnvelopeIcon
 } from "@heroicons/react/24/outline";
 import './LandingPage.css';
+import logo from './images/mail.png';
 import image1 from './images/hugeicons_mail-open.png';
 import image2 from './images/ic_round-laptop.png';
 import image3 from './images/Ellipse 9.png';
@@ -30,7 +31,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <nav className="navbar">
         <div className="navbar-brand">
-          <EnvelopeIcon className="navbar-email-icon" />
+          <img src={logo} alt="CursorMail Logo" className="navbar-logo" />
         </div>
         <div className="navbar-actions">
           <button 
@@ -44,7 +45,7 @@ export default function LandingPage() {
       <section className="hero-section">
         <div className="hero-overlay"></div>
         <div className="hero-content">
-          <h1 className="hero-title">CursorMail</h1>
+          <h1 className="hero-title">ElevateMail</h1>
           <h2 className="hero-title">Send Personalized Emails at Scale – in Seconds</h2>
           <p className="hero-subtitle">Upload your list, customize your message, and track results – all from one powerful dashboard.</p>
           <button 
