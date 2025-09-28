@@ -10,8 +10,8 @@ CREATE TABLE users (
   username VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
-  sender_email VARCHAR(255) NOT NULL,
-  app_password VARCHAR(255) NOT NULL,
+  sender_email VARCHAR(255) DEFAULT NULL,
+  app_password VARCHAR(255) DEFAULT NULL,
   profile_photo_path VARCHAR(500),
   profile_photo_filename VARCHAR(255)
 );

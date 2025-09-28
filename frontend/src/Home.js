@@ -57,6 +57,7 @@ const Home = ({ setIsAuth }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [activeNavButton, setActiveNavButton] = useState('home');
   const el = useRef(null); // element to inject typing into
   const typed = useRef(null); // store Typed instance
 
@@ -85,6 +86,13 @@ const Home = ({ setIsAuth }) => {
         } else {
           setProfilePhoto(null);
         }
+
+        // Check if app_password exists, if not redirect to register-ap page
+        if (!data.user.app_password) {
+          navigate('/register-ap');
+          return;
+        }
+
         if (response.status === 401) {
           localStorage.removeItem('token');
           setIsAuth(false);
@@ -164,6 +172,27 @@ const Home = ({ setIsAuth }) => {
   const handleTrash = () => { };
   const handleSettings = () => { navigate('/settings'); };
 
+  // Scroll functions
+  const scrollToTemplates = () => {
+    setActiveNavButton('templates');
+    document.getElementById('templates-section')?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToAbout = () => {
+    setActiveNavButton('about');
+    document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToContact = () => {
+    setActiveNavButton('contact');
+    document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleHomeClick = () => {
+    setActiveNavButton('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Map icon click handlers
   const iconHandlers = {
     handleCompose,
@@ -216,37 +245,66 @@ const Home = ({ setIsAuth }) => {
         </button>
 
         <div className="navbar-buttons">
-          <button className="home-btn active" onClick={() => navigate('/home')}>Home</button>
-          <button className="templates-btn" onClick={() => navigate('/templates')}>Templates</button>
-          <button className="about-btn" onClick={() => navigate('/about')}>About</button>
-          <button className="contact-btn" onClick={() => navigate('/contact')}>ContactUs</button>
+          <button
+            className={`home-btn ${activeNavButton === 'home' ? 'active' : ''}`}
+            onClick={handleHomeClick}
+          >
+            Home
+          </button>
+          <button
+            className={`templates-btn ${activeNavButton === 'templates' ? 'active' : ''}`}
+            onClick={scrollToTemplates}
+          >
+            Templates
+          </button>
+          <button
+            className={`about-btn ${activeNavButton === 'about' ? 'active' : ''}`}
+            onClick={scrollToAbout}
+          >
+            About
+          </button>
+          <button
+            className={`contact-btn ${activeNavButton === 'contact' ? 'active' : ''}`}
+            onClick={scrollToContact}
+          >
+            Contact Us
+          </button>
           <div className="profile-container">
             <button title="Profile" onClick={() => setShowProfileMenu((prev) => !prev)} className="profile-icon-btn">
               {profilePhoto ? (
                 <img src={profilePhoto} alt="Profile" className="profile-avatar" />
               ) : (
-                <FontAwesomeIcon icon={faCircleUser} size="lg" />
+                <FontAwesomeIcon icon={faCircleUser} size="xl" />
               )}
             </button>
             {showProfileMenu && (
               <div className="profile-dropdown">
                 <div className="profile-info">
+                  {profilePhoto ? (
+                    <img src={profilePhoto} alt="Profile" className="profile-avatar" />
+                  ) : (
+                    <FontAwesomeIcon icon={faCircleUser} size="10x" />
+                  )}
                   <span className="profile-name">{username || 'User'}</span>
                 </div>
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={handleEditProfile}>
-                  <FontAwesomeIcon icon={faUser} />
+                  <FontAwesomeIcon icon={faUser} color='grey'/>
                   <span>Profile</span>
                 </button>
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={() => setDarkMode((prev) => !prev)}>
-                  <FontAwesomeIcon icon={faMoon} />
+                  <FontAwesomeIcon icon={faMoon} color='grey'/>
                   <span>Dark mode</span>
                 </button>
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={handleLogout}>
-                  <FontAwesomeIcon icon={faSignOutAlt} />
+                  <FontAwesomeIcon icon={faSignOutAlt} color='grey'/>
                   <span>Logout</span>
                 </button>
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={() => navigate('/report')}>
-                  <FontAwesomeIcon icon={faBan} />
+                  <FontAwesomeIcon icon={faBan} color='grey'/>
                   <span>Report</span>
                 </button>
               </div>
@@ -291,7 +349,7 @@ const Home = ({ setIsAuth }) => {
       </div>
 
       {/* Template Boxes */}
-      <div className="templates-container">
+      <div id="templates-section" className="templates-container">
         {templates.map((template) => (
           <div className="template-group" key={template.id}>
             <div className="template-box">
@@ -301,6 +359,68 @@ const Home = ({ setIsAuth }) => {
           </div>
         ))}
       </div>
+
+      {/* About Section */}
+      <div id="about-section" className="about-section">
+        <div className="about-content">
+          <h2>About ElevateMail</h2>
+          <p>
+            ElevateMail is a powerful bulk email marketing platform designed to help businesses
+            and individuals send personalized emails to large audiences efficiently. Our platform
+            combines ease of use with powerful features to streamline your email marketing campaigns.
+          </p>
+          <div className="about-features">
+            <div className="feature">
+              <h3>Bulk Email Sending</h3>
+              <p>Send personalized emails to thousands of recipients with just a few clicks.</p>
+            </div>
+            <div className="feature">
+              <h3>Template Library</h3>
+              <p>Choose from our extensive collection of professionally designed email templates.</p>
+            </div>
+            <div className="feature">
+              <h3>Easy Integration</h3>
+              <p>Seamlessly integrate with your existing workflow and email systems.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Section - Footer */}
+      <footer id="contact-section" className="contact-section">
+        <div className="contact-content">
+          <div className="contact-info">
+            <h3>Contact Us</h3>
+            <p>Get in touch with our team for support, questions, or feedback.</p>
+            <div className="contact-details">
+              <div className="contact-item">
+                <strong>Email:</strong> vinayak.jadhav_comp23@pccoer.in
+              </div>
+              <div className="contact-item">
+                <strong>Phone:</strong> +91 7498564907
+              </div>
+              <div className="contact-item">
+                <strong>Address:</strong> Pimpri Chinchwad College of Engineering and Research, Ravet, Pune
+              </div>
+              <div className="contact-item">
+                <strong>Pincode:</strong> 412101
+              </div>
+            </div>
+          </div>
+          <div className="contact-form">
+            <h4>Send us a Message</h4>
+            <form>
+              <input type="text" placeholder="Your Name" required />
+              <input type="email" placeholder="Your Email" required />
+              <textarea placeholder="Your Message" rows="4" required></textarea>
+              <button type="submit">Send Message</button>
+            </form>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2024 ElevateMail. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };

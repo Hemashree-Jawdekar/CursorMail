@@ -24,9 +24,6 @@ function Navbar({ isAuth, setIsAuth }) {
 function App() {
   const [isAuth, setIsAuth] = useState(!!localStorage.getItem('token'));
 
-  useEffect(() => {
-    setIsAuth(!!localStorage.getItem('token'));
-  }, []);
 
   return (
     <div className="app-container">
@@ -36,7 +33,7 @@ function App() {
           {/* Landing Page - First page users see */}
           <Route
             path="/"
-            element={<LandingPage/>}
+            element={isAuth ? <Navigate to='/home' /> : <LandingPage />}
           />
           
           {/* Authentication Routes */}

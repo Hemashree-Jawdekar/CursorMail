@@ -8,7 +8,7 @@ function renderTemplate(template, data) {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) => data[key] || '');
 }
 
-module.exports.sendBulkEmails = async function (csvFilePath, subjectTemplate, bodyTemplate, email_id, app_password, cc, attachments) {
+module.exports.sendBulkEmails = async function (csvFilePath, subjectTemplate, bodyTemplate, senderEmail, appPassword, cc, attachments) {
   const recipients = [];
 
   // 1. Read CSV and collect recipients
@@ -35,8 +35,8 @@ module.exports.sendBulkEmails = async function (csvFilePath, subjectTemplate, bo
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: email_id,
-      pass: app_password
+      user: senderEmail,
+      pass: appPassword
     }
   });
 
@@ -46,7 +46,7 @@ module.exports.sendBulkEmails = async function (csvFilePath, subjectTemplate, bo
     const personalizedBody = renderTemplate(bodyTemplate, recipient);
 
     const mailOptions = {
-      from: `"Smart Bulk Mailer" <${email_id}>`,
+      from: `"ElevateMail" <${senderEmail}>`,
       to: recipient.email,
       subject: personalizedSubject,
       text: personalizedBody,

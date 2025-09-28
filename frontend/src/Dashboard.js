@@ -2,41 +2,44 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
-import './App.css';
+import './Dashboard.css';
 
 export default function Dashboard({ setIsAuth }) {
-  const [emailId, setEmailId] = useState('');
-  const [appPassword, setAppPassword] = useState('');
   const [csv, setCsv] = useState(null);
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [cc, setCc] = useState('');
   const [attachments, setAttachments] = useState([]);
   const [msg, setMsg] = useState('');
-  const [step, setStep] = useState(1);
   const [preview, setPreview] = useState(null);
   const navigate = useNavigate();
-
-  const handleCreds = (e) => {
-    e.preventDefault();
-    setStep(2);
-  };
 
   const handleBulkMail = async (e) => {
     e.preventDefault();
     if (!csv) return setMsg('Please upload a CSV file.');
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMsg('Please log in to send emails');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('csv', csv);
     formData.append('subject', subject);
     formData.append('body', body);
-    formData.append('email_id', emailId);
-    formData.append('app_password', appPassword);
     if (cc) formData.append('cc', cc);
     for (let i = 0; i < attachments.length; i++) {
       formData.append('attachments', attachments[i]);
     }
+    
     try {
-      const res = await axios.post('http://localhost:5000/send-bulk-emails', formData);
+      const res = await axios.post('http://localhost:5000/send-bulk-emails', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       setMsg(res.data.message);
     } catch (err) {
       setMsg(err.response?.data?.message || 'Error sending emails');
@@ -74,37 +77,107 @@ export default function Dashboard({ setIsAuth }) {
   };
 
   return (
-    <div>
-      <h2>Dashboard</h2>
-      {step === 1 ? (
-        <form className="creds-form" onSubmit={handleCreds}>
-          <h3>Enter Email Credentials for Sending</h3>
-          <input placeholder="Gmail Email ID" type="email" value={emailId} onChange={e => setEmailId(e.target.value)} required />
-          <input placeholder="App Password" type="password" value={appPassword} onChange={e => setAppPassword(e.target.value)} required />
-          <button type="submit">Continue</button>
-        </form>
-      ) : (
-        <form className="bulkmail-form" onSubmit={handleBulkMail}>
-          <h3>Send Bulk Emails</h3>
+    <div className="dashboard-container">
+      <div className="modal-overlay">
+        <div className="modal">
+          <div className="modal-header">
+            <div className="header-left">
+              <div className="header-icon">📤</div>
+              <h2>Send Bulk Emails</h2>
+            </div>
+            <div className="header-right">
+              <button className="header-btn close-btn" onClick={() => navigate('/home')}>✕</button>
+            </div>
+          </div>
           
-          <input type="file" accept=".csv" onChange={e => setCsv(e.target.files[0])} required />
-          <input placeholder="CC (comma separated emails)" value={cc} onChange={e => setCc(e.target.value)} />
-          <input type="file" multiple onChange={e => setAttachments(Array.from(e.target.files))} />
-          <input placeholder="Subject (use {{name}} for personalization)" value={subject} onChange={e => setSubject(e.target.value)} required />
-          <textarea placeholder="Body (use {{name}} for personalization)" value={body} onChange={e => setBody(e.target.value)} required />
-          <button type="button" onClick={handlePreview} style={{marginBottom: '0.5rem'}}>Preview Email</button>
-          <button type="submit">Send Emails</button>
-        </form>
-      )}
+          <div className="modal-body">
+            <form className="bulkmail-form" onSubmit={handleBulkMail}>
+              <div className="form-group">
+                <label>Recipients CSV file (Email is Required)</label>
+                <div className="file-upload-area">
+                  <div className="file-upload-icon">📄</div>
+                  <input 
+                    type="file" 
+                    accept=".csv" 
+                    onChange={e => setCsv(e.target.files[0])} 
+                    required 
+                    className="file-input"
+                  />
+                  <span className="file-upload-text">Choose CSV file with Name, Email etc. Columns</span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Cc (Optional)</label>
+                <input 
+                  type="text"
+                  placeholder="Comma separated emails" 
+                  value={cc} 
+                  onChange={e => setCc(e.target.value)} 
+                  className="text-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Attachments (Optional)</label>
+                <div className="file-upload-area">
+                  <div className="file-upload-icon">📎</div>
+                  <input 
+                    type="file" 
+                    multiple 
+                    onChange={e => setAttachments(Array.from(e.target.files))} 
+                    className="file-input"
+                  />
+                  <span className="file-upload-text">Choose attachment files</span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Subject</label>
+                <input 
+                  type="text"
+                  placeholder="Eg. Welcome {{name}}!" 
+                  value={subject} 
+                  onChange={e => setSubject(e.target.value)} 
+                  required 
+                  className="text-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Body</label>
+                <textarea 
+                  placeholder="Eg. Hii {{name}}!, \n\n Welcome to our service \n\n Best Regards!, \n Team" 
+                  value={body} 
+                  onChange={e => setBody(e.target.value)} 
+                  required 
+                  className="textarea-input"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button type="button" onClick={handlePreview} className="preview-btn">Preview Email</button>
+                <button type="submit" className="send-btn">Send Emails</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
       {preview && (
-        <div className="email-preview" style={{background:'#fffbe6',border:'1px solid #ffe082',borderRadius:8,padding:'1rem',marginTop:'1rem',textAlign:'left'}}>
+        <div className="email-preview">
           <h4>Email Preview (for: {preview.name} &lt;{preview.email}&gt;)</h4>
           <strong>Subject:</strong> {preview.subject}<br/>
           <strong>Body:</strong>
-          <pre style={{whiteSpace:'pre-wrap',margin:0}}>{preview.body}</pre>
+          <pre>{preview.body}</pre>
         </div>
       )}
-      {msg && <div style={{ color: msg.includes('success') ? 'green' : 'red', fontWeight: 500, marginTop: 10 }}>{msg}</div>}
+      
+      {msg && (
+        <div className={`message ${msg.includes('success') ? 'success' : 'error'}`}>
+          {msg}
+        </div>
+      )}
     </div>
   );
 }

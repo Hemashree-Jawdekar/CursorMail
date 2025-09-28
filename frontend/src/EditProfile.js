@@ -9,6 +9,7 @@ const EditProfile = ({ setIsAuth }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [editMode, setEditMode] = useState(''); // 'profile' or 'password'
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -123,29 +124,70 @@ const EditProfile = ({ setIsAuth }) => {
         return;
       }
 
-      // Update profile information
-      if (form.username || form.senderEmail || form.appPassword) {
-        const profileResponse = await fetch('http://localhost:5000/api/profile/edit-profile', {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: form.username,
-            sender_email: form.senderEmail,
-            app_password: form.appPassword
-          })
-        });
+      if (editMode === 'profile') {
+        // Check if any profile field has changed
+        const hasChanges = 
+          form.username !== currentUser.username ||
+          form.senderEmail !== currentUser.senderEmail ||
+          form.appPassword !== currentUser.appPassword ||
+          form.profilePhoto !== null;
 
-        if (!profileResponse.ok) {
-          const errorData = await profileResponse.json();
-          throw new Error(errorData.message || 'Failed to update profile');
+        if (hasChanges) {
+          // Update profile information (only send changed fields)
+          const updateData = {};
+          if (form.username !== currentUser.username) updateData.username = form.username;
+          if (form.senderEmail !== currentUser.senderEmail) updateData.sender_email = form.senderEmail;
+          if (form.appPassword !== currentUser.appPassword) updateData.app_password = form.appPassword;
+
+          if (Object.keys(updateData).length > 0) {
+            const profileResponse = await fetch('http://localhost:5000/api/profile/edit-profile', {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(updateData)
+            });
+
+            if (!profileResponse.ok) {
+              const errorData = await profileResponse.json();
+              throw new Error(errorData.message || 'Failed to update profile');
+            }
+          }
+
+          // Upload profile photo if provided
+          if (form.profilePhoto) {
+            const formData = new FormData();
+            formData.append('profilePhoto', form.profilePhoto);
+
+            const photoResponse = await fetch('http://localhost:5000/api/profile/upload-photo', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+              body: formData
+            });
+
+            if (!photoResponse.ok) {
+              const errorData = await photoResponse.json();
+              throw new Error(errorData.message || 'Failed to upload profile photo');
+            }
+          }
+
+          setMessage({ type: 'success', text: 'Profile updated successfully!' });
+          
+          // Update current user data
+          setCurrentUser({
+            username: form.username || currentUser.username,
+            senderEmail: form.senderEmail || currentUser.senderEmail,
+            appPassword: form.appPassword || currentUser.appPassword,
+            profilePhotoUrl: form.profilePhotoPreview || currentUser.profilePhotoUrl
+          });
+        } else {
+          setMessage({ type: 'info', text: 'No changes detected.' });
         }
-      }
-
-      // Change password if provided
-      if (form.currentPassword && form.newPassword) {
+      } else if (editMode === 'password') {
+        // Change password
         if (form.newPassword !== form.confirmPassword) {
           throw new Error('New passwords do not match');
         }
@@ -166,36 +208,9 @@ const EditProfile = ({ setIsAuth }) => {
           const errorData = await passwordResponse.json();
           throw new Error(errorData.message || 'Failed to change password');
         }
+
+        setMessage({ type: 'success', text: 'Password changed successfully!' });
       }
-
-      // Upload profile photo if provided
-      if (form.profilePhoto) {
-        const formData = new FormData();
-        formData.append('profilePhoto', form.profilePhoto);
-
-        const photoResponse = await fetch('http://localhost:5000/api/profile/upload-photo', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          body: formData
-        });
-
-        if (!photoResponse.ok) {
-          const errorData = await photoResponse.json();
-          throw new Error(errorData.message || 'Failed to upload profile photo');
-        }
-      }
-
-             setMessage({ type: 'success', text: 'Profile updated successfully!' });
-       
-       // Update current user data
-       setCurrentUser({
-         username: form.username,
-         senderEmail: form.senderEmail,
-         appPassword: form.appPassword,
-         profilePhotoUrl: form.profilePhotoPreview
-       });
        
        // Clear password fields and exit edit mode
        setForm({
@@ -207,6 +222,7 @@ const EditProfile = ({ setIsAuth }) => {
        });
        
        setIsEditing(false);
+       setEditMode('');
 
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -220,13 +236,21 @@ const EditProfile = ({ setIsAuth }) => {
     navigate('/home');
   };
 
-  const handleEdit = () => {
+  const handleEditProfile = () => {
     setIsEditing(true);
+    setEditMode('profile');
+    setMessage({ type: '', text: '' });
+  };
+
+  const handleChangePassword = () => {
+    setIsEditing(true);
+    setEditMode('password');
     setMessage({ type: '', text: '' });
   };
 
   const handleCancel = () => {
     setIsEditing(false);
+    setEditMode('');
     setForm({
       ...form,
       username: currentUser.username,
@@ -316,8 +340,11 @@ const EditProfile = ({ setIsAuth }) => {
             </div>
 
             <div className="view-actions">
-              <button className="edit-button" onClick={handleEdit}>
+              <button className="edit-button" onClick={handleEditProfile}>
                 Edit Profile
+              </button>
+              <button className="change-password-button" onClick={handleChangePassword}>
+                Change Password
               </button>
               <button className="back-button" onClick={handleBack}>
                 ← Back to Home
@@ -327,150 +354,159 @@ const EditProfile = ({ setIsAuth }) => {
         ) : (
           // Edit Mode
           <form onSubmit={handleSubmit} className="edit-profile-form">
-          {/* Profile Photo Section */}
-          <div className="form-section">
-            <label>Profile Photo</label>
-            <div className="profile-photo-section">
-              <div className="current-photo">
-                {form.profilePhotoPreview ? (
-                  <img 
-                    src={form.profilePhotoPreview} 
-                    alt="Profile" 
-                    className="profile-preview"
+            {editMode === 'profile' ? (
+              <>
+                {/* Profile Photo Section */}
+                <div className="form-section">
+                  <label>Profile Photo</label>
+                  <div className="profile-photo-section">
+                    <div className="current-photo">
+                      {form.profilePhotoPreview ? (
+                        <img 
+                          src={form.profilePhotoPreview} 
+                          alt="Profile" 
+                          className="profile-preview"
+                        />
+                      ) : (
+                        <FontAwesomeIcon 
+                          icon={faCircleUser} 
+                          className="profile-placeholder"
+                        />
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      name="profilePhoto"
+                      accept="image/*"
+                      onChange={handleChange}
+                      className="file-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Username */}
+                <div className="form-group">
+                  <label>Username</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={form.username}
+                    onChange={handleChange}
+                    placeholder="Enter new username (optional)"
                   />
-                ) : (
-                  <FontAwesomeIcon 
-                    icon={faCircleUser} 
-                    className="profile-placeholder"
+                </div>
+
+                {/* Sender Email */}
+                <div className="form-group">
+                  <label>Sender Email</label>
+                  <input
+                    type="email"
+                    name="senderEmail"
+                    value={form.senderEmail}
+                    onChange={handleChange}
+                    placeholder="Enter new sender email (optional)"
                   />
-                )}
-              </div>
-              <input
-                type="file"
-                name="profilePhoto"
-                accept="image/*"
-                onChange={handleChange}
-                className="file-input"
-              />
-            </div>
-          </div>
+                </div>
 
-          {/* Username */}
-          <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                {/* App Password */}
+                <div className="form-group">
+                  <label>App Password</label>
+                  <div className="password-input">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="appPassword"
+                      value={form.appPassword}
+                      onChange={handleChange}
+                      placeholder="Enter new app password (optional)"
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Password Change Section */}
+                <div className="form-section">
+                  <h3>Change Password</h3>
+                  
+                  <div className="form-group">
+                    <label>Current Password</label>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      value={form.currentPassword}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
 
-          {/* Sender Email */}
-          <div className="form-group">
-            <label>Sender Email</label>
-            <input
-              type="email"
-              name="senderEmail"
-              value={form.senderEmail}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                  <div className="form-group">
+                    <label>New Password</label>
+                    <div className="password-input">
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        name="newPassword"
+                        value={form.newPassword}
+                        onChange={handleChange}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
+                      </button>
+                    </div>
+                  </div>
 
-          {/* App Password */}
-          <div className="form-group">
-            <label>App Password</label>
-            <div className="password-input">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="appPassword"
-                value={form.appPassword}
-                onChange={handleChange}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
+                  <div className="form-group">
+                    <label>Confirm New Password</label>
+                    <div className="password-input">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        value={form.confirmPassword}
+                        onChange={handleChange}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="form-actions">
+              <button 
+                type="submit" 
+                className="save-button"
+                disabled={isSubmitting}
               >
-                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button 
+                type="button" 
+                className="cancel-button"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
               </button>
             </div>
-          </div>
-
-          {/* Password Change Section */}
-          <div className="form-section">
-            <h3>Change Password (Optional)</h3>
-            
-            <div className="form-group">
-              <label>Current Password</label>
-              <input
-                type="password"
-                name="currentPassword"
-                value={form.currentPassword}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>New Password</label>
-              <div className="password-input">
-                <input
-                  type={showNewPassword ? "text" : "password"}
-                  name="newPassword"
-                  value={form.newPassword}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                >
-                  <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
-                </button>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Confirm New Password</label>
-              <div className="password-input">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="form-actions">
-            <button 
-              type="submit" 
-              className="save-button"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button 
-              type="button" 
-              className="cancel-button"
-              onClick={handleCancel}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+          </form>
         )}
       </div>
     </div>

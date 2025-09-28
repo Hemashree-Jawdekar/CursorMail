@@ -12,8 +12,11 @@ router.post('/register', async (req, res) => {
   if (user.length) return res.status(400).json({ message: 'User exists' });
 
   const hashed = await bcrypt.hash(password, 10);
-  await db.query('INSERT INTO users (username, password, email) VALUES (?, ?, ?)', [username, hashed, email]);
-  res.json({ message: 'Registered' });
+  await db.query(
+    "INSERT INTO users (username, password, email, sender_email) VALUES (?, ?, ?, ?)",
+    [username, hashed, email, email]  // pass email again for sender_email
+  );
+  
 });
 
 // Check if username exists

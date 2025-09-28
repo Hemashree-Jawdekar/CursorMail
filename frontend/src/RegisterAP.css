@@ -1,48 +1,53 @@
 body{
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    background: linear-gradient(180deg, #7fc6d4 50%, #5b8b9c 100%);
 }
 
 .register-ap-container {
   display: flex;
-  min-height: 350px;
+  min-height: 400px;
   background: transparent;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
   overflow: hidden;
   margin: 2rem auto;
-  max-width: 900px; /* set a max width for the whole container */
+  max-width: 1200px; 
   width: 100%;
 }
 
 .register-ap-left {
   flex: 1;
   width: 60rem; /* increased width */
-  background: transparent;
+  background: white;
   display: flex;
-  align-items: center;
-  justify-content: flex-start; /* move content to the left */
+  flex-direction: column;
+  /* align-items: center; */
+  /* justify-content:first baseline; move content to the left */
   padding: 2rem 3rem; /* more left padding */
 }
 
 .register-ap-left h2 {
-  margin-top: 1rem;
-  margin-left: 2rem; /* move name further left */
-  font-size: 1.7rem;
+  margin-top: 0rem;
+  margin-left: -10rem; /* move name further left */
+  font-size: 3.5rem;
   font-weight: 600;
   color: #2d3748;
   letter-spacing: 1px;
 }
 
-.register-ap-icon {
-  width: 56px;
-  height: 56px;
+.register-ap-logo {
+  margin-top: 1rem;
+  margin-left: 1.2rem;
+  width: 78px;
+  height: 66px;
   color: #2563eb;
 }
 
 .register-ap-form {
   flex: 2;
   width: 100%;        /* take all available space */
-  max-width: 600px;   /* set a max width for the form */
+  max-width: 600px;
+  background: white;   /* set a max width for the form */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -60,31 +65,66 @@ body{
 .register-ap-form input {
   width: 100%;
   padding: 0.7rem 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-bottom: 1px solid #cbd5e1;
+  border-radius: 4px;
   font-size: 1rem;
-  background: #f8fafc;
+  background: #7d79793f ;
   margin-top: 0.3rem;
   transition: border 0.2s;
 }
 
 .register-ap-form input:focus {
-  border-color: #2563eb;
+  border-color: #628eec;
+  background: white;
   outline: none;
+}
+
+.register-ap-password {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+}
+
+.app-password-toggle {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.app-password-toggle:hover {
+  color: #3b82f6;
+  background: none;
+  transform: none;
+}
+
+.eye-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+}
+
+.eye-icon:hover {
+  color: #3b82f6;
+  background: none;
 }
 
 .register-ap-form .register-ap-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 5rem;
+  margin-top: 0rem;
 }
 
-.register-ap-form button {
+.register-ap-form button[type="submit"] {
+  width: 120px;
+  align-items: center;
   padding: 0.6rem 1.5rem;
   border: none;
   border-radius: 6px;
-  background: #2563eb;
+  background: linear-gradient(135deg, #1798A9 0%, #2D92BA 100%);
   color: #fff;
   font-size: 1rem;
   font-weight: 500;
@@ -92,11 +132,30 @@ body{
   transition: background 0.2s;
 }
 
-.register-ap-form button[type="button"] {
-  background: #e5e7eb;
-  color: #374151;
+.register-ap-actions button[type="button"] {
+  font-size: small;
+  background: none; 
+  color: #2c2c2c; 
 }
 
-.register-ap-form button:hover {
+.help-dot {
+  font-size: smaller;
+}
+
+.help-dot:hover , .register-ap-actions button[type="button"]:hover {
+  color: darkgrey;
+  transform: none;
+}
+
+.register-ap-form button[type="submit"]:active {
   background: #1d4ed8;
+}
+
+.change_sender, .change_sender:hover {
+  font-size: small;
+  color: #497ceb;
+  margin-top: -2rem;
+  margin-left: auto;
+  background: none;
+  transform: none;
 }

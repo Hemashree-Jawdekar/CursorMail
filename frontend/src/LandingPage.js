@@ -19,7 +19,8 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    navigate('/login');
+       navigate('/login');
+        
   };
 
   const handleRegister = () => {
