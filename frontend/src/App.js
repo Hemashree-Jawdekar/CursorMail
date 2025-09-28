@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
  // choose the icon you want
 import Login from './Login';
 import Register from './Register';
+import Forgotpassword from "./Forgotpassword";
+import Resetpassword from "./Resetpassword";
 import Dashboard from './Dashboard';
 import RegisterAP from './RegisterAP';
 import Home from './Home';
@@ -23,6 +25,11 @@ function Navbar({ isAuth, setIsAuth }) {
 
 function App() {
   const [isAuth, setIsAuth] = useState(!!localStorage.getItem('token'));
+  useEffect(() => {
+    const onStorage = () => setIsAuth(!!localStorage.getItem('token'));
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
 
   return (
@@ -63,6 +70,16 @@ function App() {
           <Route 
             path="/dashboard" 
             element={isAuth ? <Dashboard setIsAuth={setIsAuth} /> : <Navigate to="/login" />} 
+          />
+
+          <Route
+            path="/forgot-password"
+            element={<Forgotpassword />}
+          />
+          
+          <Route 
+             path="/reset-password" 
+             element={<Resetpassword setIsAuth={setIsAuth} />}
           />
           
           <Route
