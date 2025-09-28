@@ -1,9 +1,10 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { EnvelopeIcon, LockClosedIcon, UserIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import './Login.css';
+import Home from './Home';
+import Aftersignup from './Aftersignup';
 import girl from './images/sitting-2.png';
 import image12 from './images/11.png';
 import image13 from './images/Avatar Group.png';
@@ -36,28 +37,14 @@ export default function Login({ setIsAuth }) {
   const [msg, setMsg] = useState('');
   const navigate = useNavigate();
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/login', { username, password });
-      localStorage.setItem('token', response.data.token);
+      const res = await axios.post('http://localhost:5000/api/login', { username, password });
+      console.log('Login response:', res.data);
+      localStorage.setItem('token', res.data.token);
       setIsAuth(true);
-
-      // Fetch user data to check sender_email and app_password
-      const userRes = await fetch('http://localhost:5000/api/home', {
-        headers: {
-          'Authorization': `Bearer ${response.data.token}`,
-        },
-      });
-      const userData = await userRes.json();
-
-      // Check for sender_email and app_password
-      if (!userData.user?.app_password) {
-        navigate('/register-ap');
-      } else {
-        navigate('/home');
-      }
+      navigate('/home');
     } catch (err) {
       setMsg(err.response?.data?.message || 'Error');
     }
@@ -72,10 +59,10 @@ export default function Login({ setIsAuth }) {
 
           <div className="login-form-group">
             <div className="login-input-with-icon">
-              <UserIcon className="login-input-icon" />
+              <UserIcon className="register-input-icon" />
               <input
-                id="user"
-                type="user"
+                id="Username"
+                type="Username"
                 placeholder="     Username"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
@@ -89,7 +76,7 @@ export default function Login({ setIsAuth }) {
               <LockClosedIcon className="login-input-icon" />
               <input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"}   // <-- use state here
                 placeholder="     Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -100,13 +87,13 @@ export default function Login({ setIsAuth }) {
                 className="login-password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {!showPassword ? <EyeSlashIcon className="eye-icon" /> : <EyeIcon className="eye-icon" />}
+                {showPassword ? <EyeSlashIcon className="eye-icon" /> : <EyeIcon className="eye-icon" />}
               </button>
 
             </div>
           </div>
 
-          <Link to="/resetPassword" className="forgot-password">
+          <Link to="/forgot-password" className="forgot-password">
             Forgot password?
           </Link>
 
